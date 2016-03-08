@@ -25,7 +25,7 @@ our $VERSION = '1.0';
 
 =head1 SYNOPSIS
 
-TidyLIB is a perl module that rename the media files in the directory.
+FormatLIB is a perl module that rename the media files in the directory.
 
 A little example of usage.
 
