@@ -1,5 +1,5 @@
 #!/usr/bin/perl -s
-require 'mod/FormatLIB.pm';
+require 'mod/MediaLIB.pm';
 $dir ||= ".";
 $mode ||= 0;
-FormatLIB::my_format($dir,$mode);
+MediaLIB::my_format($dir,$mode);

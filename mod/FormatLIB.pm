@@ -81,52 +81,6 @@ sub format_serie
     return $var;
 }
 
-=head2 my_format
-
-=cut
-
-sub my_format
-{
-    my $dir  = shift @_;
-    my $mode = shift @_;
-    my $var  = "";
-    my $cpt = 0;
-    opendir (DIR, $dir) or die $!;
-    chdir($dir);
-    while (my $file = readdir(DIR))
-    {
-	# Use a regular expression to find files ending in .avi .mp4 and .mkv
-	next unless ($file =~ m/\.(avi|mp4|mkv)$/);
-	if    ($file =~ m/S[0-9]{2}E[0-9]{2}/)
-	{
-	    if ($mode == 1)
-	    {
-		print color("green"), "-- SERIE -- ", color("reset");
-	    }
-	    $var = &format_serie($file);
-	    if ($mode == 1)
-	    {
-		print "rename : $file => $var\n";
-	    }
-	}
-	else
-	{
-	    if ($mode == 1)
-	    {
-		print color("red"), "-- MOVIE -- ", color("reset");
-	    }
-	    $var = &format_movie($file);
-	    if ($mode == 1)
-	    {
-		print "rename : $file => $var\n";
-	    }
-	}
-	rename $file, $var;
-    }
-    closedir(DIR);
-    exit 0;
-}
-
 =head1 AUTHOR
 
 sbksba, C<< <sbksba at gmail.com> >>
