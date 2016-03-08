@@ -96,58 +96,6 @@ sub createDir
     unless(-e $directory or mkdir $directory) {die "Unable to create $directory\n";}
 }
 
-=head2 list
-
-=cut
-
-sub list
-{
-    my $dir = shift @_;
-    my $csv = shift @_;
-    my $mode = shift @_;
-    my $cpt = 0;
-    opendir (DIR, $dir) or $!;
-    chdir($dir);
-    if ($mode == 1)
-    {
-	print "\tCreate Directory\n";
-    }
-    while (my $file = readdir(DIR))
-    {
-	next unless ($file =~ m/\.(avi|mp4|mkv)$/);
-	if ($file =~ m/S[0-9]{2}E[0-9]{2}/)
-	{
-	    my $tmp1 = $file;
-	    my $tmp2 = $file;
-	    $tmp1 =~ s/S[0-9]{2}E[0-9]{2}\.(avi|mkv|mp4)//;
-	    $tmp1 =~ s/\_$//;
-	    $tmp2 =~ s/(.*)(S[0-9]{2})(.*)/$2/;
-	    if (! -e $tmp1) {&createDir($tmp1,$mode);$cpt++}
-	    if (! -e "$tmp1/$tmp2") {&createDir("$tmp1/$tmp2",$mode);$cpt++}
-	    rename $file, "$tmp1/$tmp2/$file";
-	}
-	else
-	{
-	    &readCSV($csv,0);
-	    my $tmp3 = $file;
-	    $tmp3 =~ tr/\_/ /;
-	    $tmp3 =~ s/(.*)\.(avi|mp4|mkv)$/$1/;
-	    my $tmp4 = &findMovie($tmp3,0);
-	    $tmp4 =~ s/^"(.*)"$/$1/;
-	    $tmp4 =~ tr/ /\_/;
-	    if ($tmp4 eq "") {$tmp4 = "none";}
-	    if (! -e $tmp4) {&createDir($tmp4,$mode);$cpt++}
-	    rename $file, "$tmp4/$file";
-	}
-    }
-    if ($mode == 1)
-    {
-	if ($cpt eq 0) {print color("red"), "\t-- Not Need To Create--\n", color("reset");};
-    }
-    closedir(DIR);
-    exit 0;
-}
-
 =head1 AUTHOR
 
 sbksba, C<< <sbksba at gmail.com> >>
