@@ -23,7 +23,7 @@ You can test the program with the shell script bench.sh
 For a documentation about the modules you must to use the command perldoc.
 Example
 
-perldoc mod::TodyLIB
+perldoc mod::TidyLIB
 
 ## Licence
 
