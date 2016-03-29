@@ -8,9 +8,9 @@ cd ..
 cd Serie
 ../create.pl -type="serie"
 cd ..
-cd Vrac
-../create.pl
-cd ..
+#cd Vrac
+#../create.pl
+#cd ..
 cp -f films.csv Films
 #cp -f films.csv Serie
-cp -f films.csv Vrac
+#cp -f films.csv Vrac
