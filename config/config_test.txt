@@ -1,3 +1,0 @@
-/home/sbksba/nyx/progra/GIT/Pro/MediaBot/test/Vrac
-/home/sbksba/nyx/progra/GIT/Pro/MediaBot/test/Films
-/home/sbksba/nyx/progra/GIT/Pro/MediaBot/test/Serie
