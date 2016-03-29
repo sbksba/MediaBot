@@ -18,6 +18,14 @@ or
 
 You can test the program with the shell script bench.sh
 
+Or
+
+You can build the Go program media.go     
+> go build media.go
+> ./media
+
+You just need to edit the config file config.cfg
+
 ## DOC
 
 For a documentation about the modules you must to use the command perldoc.
