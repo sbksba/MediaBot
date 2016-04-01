@@ -12,19 +12,17 @@ Usage
 ./MediaBot.pl v list_of_directory -> verbose mode     
 ./MediaBot.pl list_of_directory   -> non verbose mode     
 
-or
-
-./launch.sh
-
-You can test the program with the shell script bench.sh
-
-Or
-
-You can build the Go program media.go     
+You build the Go program media.go     
 > go build media.go
 > ./media
 
 You just need to edit the config file config.cfg
+
+or
+
+For just a simple test use the command :
+
+> ./MediaBot.pl v test/Films     
 
 ## DOC
 
