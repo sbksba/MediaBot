@@ -1,7 +1,7 @@
 package main
 
 import (
-	"./packages/cfg"
+	"./pkg/cfg"
 	"fmt"
 	"log"
 	"time"
