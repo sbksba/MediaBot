@@ -1,6 +1,8 @@
 language: go
 
+go_import_path: packages/cfg
 
 go:
    - 1.3
-   - tip
+   - 1.4
+   - 1.5
