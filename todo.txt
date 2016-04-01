@@ -1,7 +1,0 @@
-TODO
-====
-
-* il faudrait que la base de donnees de tri des films (le fichier film.csv) soit
-  une vraie base de donnees, centralisee pour tout les utilisateurs.
-  Ainsi le tri des films sera plus efficace.
-  On peut garder le fichier csv qui se met a jour avec la base de donnee.
