@@ -1,6 +1,8 @@
 MEDIABOT
 ========
 
+[![Build Status](https://travis-ci.org/sbksba/MediaBot.svg?branch=master)](https://travis-ci.org/sbksba/MediaBot)
+
 Synopsis
 --------
 
