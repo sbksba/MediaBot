@@ -1,7 +1,8 @@
 package main
 
 import (
-	"./pkg/cfg"
+	//"./pkg/cfg"
+	"github.com/jimlawless/cfg"
 	"fmt"
 	"log"
 	"time"
