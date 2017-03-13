@@ -105,6 +105,5 @@ def notifcation_serie(directory):
                     print bcolors.EMPTY + "-- Season Download --"+ bcolors.ENDC + "["+season+"]"
 
 if __name__=="__main__":
-    #serie = ConfigSectionMap("MEDIABOT")['media']+"/Serie"
-    serie = "/home/sbksba/nyx/Media/Movie/Serie"
+    serie = ConfigSectionMap("MEDIABOT")['media']+"/Serie"
     notifcation_serie(serie)
