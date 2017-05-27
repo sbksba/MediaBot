@@ -2,6 +2,12 @@ import re, shutil, urllib
 from Config_tools import ConfigSectionMap
 from os import listdir, makedirs
 from os.path import isfile, join, exists
+
+try:
+    import tmdbsimple as tmdb
+except:
+    print "TMDBSimple Module Installation..."
+    os.system('python -m pip install tmdbsimple')
 import tmdbsimple as tmdb
 
 tmdb.API_KEY = ConfigSectionMap("TMDB")['key']

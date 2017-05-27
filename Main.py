@@ -2,7 +2,7 @@ from module.Config_tools import ConfigSectionMap
 from module.Format import media_format
 from module.Tidy import classify, tidy_up, internet_access
 from module.Download import move_media
-from module.Notification import notifcation_serie
+from module.Notification import notification_media
 
 verbose = ConfigSectionMap("MEDIABOT")['verbose']
 
@@ -32,4 +32,4 @@ if __name__=="__main__":
     tidy_up(media+"/Serie")
     tidy_up(media+"/Movie")
     # NOTIFICATION
-    notifcation_serie(media+"/Serie")
+    notification_media(media+"/Serie")

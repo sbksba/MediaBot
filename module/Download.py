@@ -2,9 +2,6 @@ import re, shutil
 from Config_tools import ConfigSectionMap
 from os import listdir
 from os.path import isfile, join, exists
-#import tmdbsimple as tmdb
-
-#tmdb.API_KEY = ConfigSectionMap("TMDB")['key']
 
 # Move the media files from the download directory to the directory "directory"
 def move_media(directory_download, directory_target):

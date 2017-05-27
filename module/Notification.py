@@ -1,13 +1,21 @@
-import re, sys, ConfigParser, ast, os, datetime
-from Config_tools import ConfigSectionMap
-from Tidy import internet_access
-import tmdbsimple as tmdb
+import re, sys, ConfigParser, ast, os, datetime, urllib, shutil
 from os import listdir
 from os.path import isdir, isfile, join, exists
+from Config_tools import ConfigSectionMap
+from Tidy import internet_access
+from Torrent import check_torrent
+
+try:
+    import tmdbsimple as tmdb
+except:
+    print "TMDBSimple Module Installation..."
+    os.system('python -m pip install tmdbsimple')
+import tmdbsimple as tmdb
 
 tmdb.API_KEY = ConfigSectionMap("TMDB")['key']
 verbose = ConfigSectionMap("MEDIABOT")['verbose']
 debug = ConfigSectionMap("MEDIABOT")['debug']
+discret = ConfigSectionMap("MEDIABOT")['discret']
 
 class bcolors:
     COMPLETE = '\033[92m'
@@ -15,9 +23,8 @@ class bcolors:
     EMPTY = '\033[91m'
     ENDC = '\033[0m'
 
-## SERIE
+## GLOBAL FUNCTIONS
 def get_Serie_Id(serie_name):
-
     search = tmdb.Search()
     ser = search.tv(query=serie_name)
     serie_id = ""
@@ -50,7 +57,9 @@ def get_Dict_Serie(mypath):
         key += 1
 
     return mydict
+##
 
+## NOT DISCRET
 def check_serie(mypath,serie_name,serie_id,season_nb):
     mypath= mypath+serie_name+"/S"+season_nb
     mydict = get_Dict_Serie(mypath)
@@ -76,7 +85,6 @@ def check_serie(mypath,serie_name,serie_id,season_nb):
         if (debug == "True"):
             print bcolors.NOTCOMPLETE + "-- Season Not Complete --"+ bcolors.ENDC +"["+season_nb+"] Episodes to download -> ",
             print dict_need
-######
 
 def notifcation_serie(directory):
     if (verbose == "True"):
@@ -87,6 +95,7 @@ def notifcation_serie(directory):
             print bcolors.COMPLETE + "-- NOTIFICATION -- " + bcolors.ENDC + " ["+directory+"]"
     mypath = directory
     series = [f for f in listdir(mypath) if isdir(join(mypath, f))]
+
     for serie in series:
         name = serie.replace("_"," ").rsplit('.',1)[0]
         serie_id = get_Serie_Id(name)
@@ -104,6 +113,73 @@ def notifcation_serie(directory):
                 if (debug == "True"):
                     print bcolors.EMPTY + "-- Season Download --"+ bcolors.ENDC + "["+season+"]"
 
-if __name__=="__main__":
-    serie = ConfigSectionMap("MEDIABOT")['media']+"/Serie"
-    notifcation_serie(serie)
+## DISCRET
+def discret_check_serie(mypath,serie_name,serie_id,season_nb):
+    mypath= mypath+serie_name+"/S"+season_nb
+    mydict = get_Dict_Serie(mypath)
+    search = tmdb.TV_Seasons(serie_id,season_nb)
+    ser = search.info()
+    now = datetime.datetime.now().strftime('%Y-%m-%d')
+    dict_need=[]
+    torrent_list=[]
+
+    for s in ser.get('episodes'):
+        if (s['episode_number'] < 10):
+                episode = serie_name+"_S"+season_nb+"E0"+str(s['episode_number'])
+        else:
+                episode = serie_name+"_S"+season_nb+"E"+str(s['episode_number'])
+        if (episode in mydict.values()):
+            continue
+        elif(now > s['air_date'] and s['air_date'] is not None):
+            torrent_list.append(episode)
+
+    return torrent_list
+
+def discret_notifcation_serie(directory):
+    if (verbose == "True"):
+        if (internet_access() == False):
+            print bcolors.EMPTY + "-- NOTIFICATION -- " + bcolors.ENDC + " ["+directory+"]"
+            exit()
+
+    mypath = directory
+    series = [f for f in listdir(mypath) if isdir(join(mypath, f))]
+    torrent_list = []
+    for serie in series:
+        name = serie.replace("_"," ").rsplit('.',1)[0]
+        serie_id = get_Serie_Id(name)
+        last_season = int(get_Last_Season_Number(serie_id))
+        season = ""
+        for s in range(1,last_season+1):
+            if (s < 10):
+                season = "0"+str(s)
+            else:
+                season = str(s)
+            if (isdir(join(mypath+"/"+serie+"/S"+season))):
+                tmp = discret_check_serie(mypath+"/",serie,serie_id,season)
+                if tmp:
+                    torrent_list.append(tmp)
+
+    return sum(torrent_list,[])
+
+def torrent_check(torrent_list):
+    print "torrent_check"
+    if (internet_access() == False):
+        exit()
+    list_clean = []
+    notify_list = []
+    for torrent in torrent_list:
+        name = torrent.replace("_"," ").rsplit('.',1)[0]
+        list_clean.append(name)
+
+    notify_list = check_torrent(list_clean)
+    print notify_list
+
+###
+def notification_media(directory):
+    if (discret == "True"):
+        torrent = []
+        torrent = discret_notifcation_serie(directory)
+        print torrent
+        torrent_check(torrent)
+    else:
+        notifcation_serie(directory)
