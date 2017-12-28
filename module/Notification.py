@@ -168,7 +168,7 @@ def discret_notifcation_serie(directory):
     return sum(torrent_list,[])
 
 def notify_database(torrent_list, DB_filepath):
-    print("notify_database")
+    #print("notify_database")
     db = sqlite3.connect(DB_filepath)
     cur = db.cursor()
     cur.executescript("""
@@ -206,9 +206,9 @@ def print_download_database(DB_filepath,table):
         cur = db.cursor()
 
         cur.execute("SELECT * FROM {tn} WHERE TORRENT='TRUE'".format(tn=table))
-        print("")
+        print("\nAVAILABLE TORRENTS\n==================\n")
         for row in cur:
-            print("{:4}|{:50}|{:3}|{:3}|{}".format(row[0], row[1].encode('utf-8'), row[2].encode('utf-8'), row[3].encode('utf-8'), row[4].encode('utf-8')))
+            print("{}_S{}E{}".format(row[1].encode('utf-8'), row[2].encode('utf-8'), row[3].encode('utf-8')))
         cur.close()
         db.close()
 
