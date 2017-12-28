@@ -1,16 +1,22 @@
-import re, sys, ConfigParser, ast, os, datetime, urllib, shutil
+import re, sys, ConfigParser, ast, os, datetime, urllib, shutil, sqlite3
 from os import listdir
 from os.path import isdir, isfile, join, exists
-from Config_tools import ConfigSectionMap
-from Tidy import internet_access
-from Torrent import check_torrent
+from .Config_tools import ConfigSectionMap
 
 try:
     import tmdbsimple as tmdb
 except:
-    print "TMDBSimple Module Installation..."
+    print("TMDBSimple Module Installation...")
     os.system('python -m pip install tmdbsimple')
 import tmdbsimple as tmdb
+
+def internet_access():
+    try:
+        stri = "https://www.google.com"
+        data = urllib.urlopen(stri)
+        return True
+    except:
+        return False
 
 tmdb.API_KEY = ConfigSectionMap("TMDB")['key']
 verbose = ConfigSectionMap("MEDIABOT")['verbose']
@@ -80,19 +86,19 @@ def check_serie(mypath,serie_name,serie_id,season_nb):
 
     if (not dict_need):
         if (debug == "True"):
-            print bcolors.COMPLETE + "-- Season Complete --"+ bcolors.ENDC + "["+season_nb+"]"
+            print(bcolors.COMPLETE + "-- Season Complete --"+ bcolors.ENDC + "["+season_nb+"]")
     else:
         if (debug == "True"):
             print bcolors.NOTCOMPLETE + "-- Season Not Complete --"+ bcolors.ENDC +"["+season_nb+"] Episodes to download -> ",
-            print dict_need
+            print(dict_need)
 
 def notifcation_serie(directory):
     if (verbose == "True"):
         if (internet_access() == False):
-            print bcolors.EMPTY + "-- NOTIFICATION -- " + bcolors.ENDC + " ["+directory+"]"
+            print(bcolors.EMPTY + "-- NOTIFICATION -- " + bcolors.ENDC + " ["+directory+"]")
             exit()
         else:
-            print bcolors.COMPLETE + "-- NOTIFICATION -- " + bcolors.ENDC + " ["+directory+"]"
+            print(bcolors.COMPLETE + "-- NOTIFICATION -- " + bcolors.ENDC + " ["+directory+"]")
     mypath = directory
     series = [f for f in listdir(mypath) if isdir(join(mypath, f))]
 
@@ -101,7 +107,7 @@ def notifcation_serie(directory):
         serie_id = get_Serie_Id(name)
         last_season = int(get_Last_Season_Number(serie_id))
         season = ""
-        print "\n## "+name+" ##"
+        print("\n## "+name+" ##")
         for s in range(1,last_season+1):
             if (s < 10):
                 season = "0"+str(s)
@@ -111,7 +117,7 @@ def notifcation_serie(directory):
                 check_serie(mypath+"/",serie,serie_id,season)
             else:
                 if (debug == "True"):
-                    print bcolors.EMPTY + "-- Season Download --"+ bcolors.ENDC + "["+season+"]"
+                    print(bcolors.EMPTY + "-- Season Download --"+ bcolors.ENDC + "["+season+"]")
 
 ## DISCRET
 def discret_check_serie(mypath,serie_name,serie_id,season_nb):
@@ -138,7 +144,7 @@ def discret_check_serie(mypath,serie_name,serie_id,season_nb):
 def discret_notifcation_serie(directory):
     if (verbose == "True"):
         if (internet_access() == False):
-            print bcolors.EMPTY + "-- NOTIFICATION -- " + bcolors.ENDC + " ["+directory+"]"
+            print(bcolors.EMPTY + "-- NOTIFICATION -- " + bcolors.ENDC + " ["+directory+"]")
             exit()
 
     mypath = directory
@@ -161,25 +167,59 @@ def discret_notifcation_serie(directory):
 
     return sum(torrent_list,[])
 
-def torrent_check(torrent_list):
-    print "torrent_check"
-    if (internet_access() == False):
-        exit()
-    list_clean = []
-    notify_list = []
-    for torrent in torrent_list:
-        name = torrent.replace("_"," ").rsplit('.',1)[0]
-        list_clean.append(name)
+def notify_database(torrent_list, DB_filepath):
+    print("notify_database")
+    db = sqlite3.connect(DB_filepath)
+    cur = db.cursor()
+    cur.executescript("""
+    DROP TABLE IF EXISTS notify;
+    CREATE TABLE notify (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, SEASON TEXT, EPISODE TEXT, TORRENT TEXT);
+    """)
 
-    notify_list = check_torrent(list_clean)
-    print notify_list
+    for torrent in torrent_list:
+        name    = torrent.rsplit("_",1)[0]
+        season  = torrent.rsplit("_",1)[1].rsplit("E",1)[0].rsplit("S",1)[1]
+        episode = torrent.rsplit("_",1)[1].rsplit("E",1)[1]
+        torrent_exist = "FALSE"
+        to_db = [unicode(name, "utf8"), unicode(season, "utf8"), unicode(episode, "utf8"), unicode(torrent_exist, "utf8")]
+        cur.execute("INSERT INTO notify (NAME, SEASON, EPISODE, TORRENT) VALUES(?, ?, ?, ?);", to_db)
+        db.commit()
+
+    cur.close()
+    db.close()
+
+def print_notify_database(DB_filepath,table):
+    if (os.path.isfile(DB_filepath)):
+        db = sqlite3.connect(DB_filepath)
+        cur = db.cursor()
+
+        cur.execute("SELECT * FROM {tn}".format(tn=table))
+        print("")
+        for row in cur:
+            print("{:4}|{:50}|{:3}|{:3}|{}".format(row[0], row[1].encode('utf-8'), row[2].encode('utf-8'), row[3].encode('utf-8'), row[4].encode('utf-8')))
+        cur.close()
+        db.close()
+
+def print_download_database(DB_filepath,table):
+    if (os.path.isfile(DB_filepath)):
+        db = sqlite3.connect(DB_filepath)
+        cur = db.cursor()
+
+        cur.execute("SELECT * FROM {tn} WHERE TORRENT='TRUE'".format(tn=table))
+        print("")
+        for row in cur:
+            print("{:4}|{:50}|{:3}|{:3}|{}".format(row[0], row[1].encode('utf-8'), row[2].encode('utf-8'), row[3].encode('utf-8'), row[4].encode('utf-8')))
+        cur.close()
+        db.close()
 
 ###
 def notification_media(directory):
     if (discret == "True"):
         torrent = []
         torrent = discret_notifcation_serie(directory)
-        print torrent
-        torrent_check(torrent)
+        notify_database(torrent,"notify_db.sqlite")
+        os.system("python3 module/Torrent.py")
+        #print_notify_database("notify_db.sqlite", "notify")
+        print_download_database("notify_db.sqlite", "notify")
     else:
         notifcation_serie(directory)

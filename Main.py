@@ -32,4 +32,4 @@ if __name__=="__main__":
     tidy_up(media+"/Serie")
     tidy_up(media+"/Movie")
     # NOTIFICATION
-    notification_media(media+"/Serie")
+    #notification_media(media+"/Serie")
