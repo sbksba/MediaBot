@@ -12,7 +12,6 @@ import tmdbsimple as tmdb
 
 tmdb.API_KEY = ConfigSectionMap("TMDB")['key']
 verbose = ConfigSectionMap("MEDIABOT")['verbose']
-debug = ConfigSectionMap("MEDIABOT")['debug']
 
 class bcolors:
     MOVIE = '\033[94m'
@@ -23,7 +22,7 @@ class bcolors:
 # Create the directory "directory"
 def create_directory(directory):
     if not exists(directory):
-        if (debug == "True"):
+        if (verbose == "True"):
             media_dir = re.sub(directory+"/(Serie|Movie)/",'',directory)
             print bcolors.WARNING + "\t-- Create Directory --"+ bcolors.ENDC + " ["+media_dir+"]"
         makedirs(directory)

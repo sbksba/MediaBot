@@ -4,7 +4,6 @@ from os import listdir
 from os.path import isfile, join
 
 verbose = ConfigSectionMap("MEDIABOT")['verbose']
-debug = ConfigSectionMap("MEDIABOT")['debug']
 
 class bcolors:
     MOVIE = '\033[94m'
@@ -55,11 +54,11 @@ def media_format(directory):
                 n = format_serie(of)
                 new = join(mypath, n)
                 shutil.move(join(mypath,of),new)
-                if (debug == "True"):
+                if (verbose == "True"):
                     print bcolors.SERIE + "\t-- SERIE -- " + bcolors.ENDC + n
             else:
                 n = format_movie(of)
                 new = join(mypath, n)
                 shutil.move(join(mypath,of),new)
-                if (debug == "True"):
+                if (verbose == "True"):
                     print bcolors.MOVIE + "\t-- MOVIE -- " + bcolors.ENDC + n
