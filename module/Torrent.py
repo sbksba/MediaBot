@@ -15,8 +15,12 @@ def updateDB(DB_filepath, table):
 
         cur.execute("SELECT * FROM {tn}".format(tn=table))
         for row in cur:
-            query = row[1].replace("_"," ")+" S"+row[2]+"E"+row[3]
-            url = 'http://www.torrents9.pe/search_torrent/'+ row[1].replace("_","-") +'.html'
+            if (row[1] == "Lethal_Weapon"):
+                query = "L'Arme fatale"+" S"+row[2]+"E"+row[3]
+                url = 'http://www.torrents9.pe/search_torrent/l-arme-fatale.html'
+            else:
+                query = row[1].replace("_"," ")+" S"+row[2]+"E"+row[3]
+                url = 'http://www.torrents9.pe/search_torrent/'+ row[1].replace("_","-") +'.html'
             # un tiret entre les mots
             req = urllib.request.Request(url, headers={'User-Agent' : "Magic Browser"})
             response = urllib.request.urlopen( req )
@@ -25,8 +29,9 @@ def updateDB(DB_filepath, table):
             soup = BeautifulSoup(html, 'html.parser')
             res=None
             for heading in soup.body.find_all('a'):
-                if re.search(query, heading.text) is not None:
-                    res=heading.text
+                re_heading = re.sub(" \([0-9]{4}\)", "", heading.text)
+                if re.search(query, re_heading) is not None:
+                    res= re_heading
             if (res is None):
                 res = "FALSE"
             else:
