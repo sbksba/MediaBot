@@ -42,6 +42,7 @@ def get_Serie_Id(serie_name):
 def get_Last_Season_Number(serie_id):
     search = tmdb.TV(serie_id)
     ser = search.info()
+
     for s in ser.get("seasons"):
         if (s['season_number'] < 10):
             season_nb = "0"+str(s['season_number'])
@@ -84,11 +85,25 @@ def check_serie(mypath,serie_name,serie_id,season_nb):
             dict_need.append(str(s['episode_number']))
 
     if (not dict_need):
-        print(bcolors.COMPLETE + "-- Season Complete --"+ bcolors.ENDC + "["+season_nb+"]")
+        print(bcolors.COMPLETE + "-- Season Complete --    "+ bcolors.ENDC + "["+season_nb+"]")
     else:
-        print bcolors.NOTCOMPLETE + "-- Season Not Complete --"+ bcolors.ENDC +"["+season_nb+"] Episodes to download -> ",
+        print bcolors.NOTCOMPLETE + "-- Season Not Complete --"+ bcolors.ENDC +"["+season_nb+"] EPISODES TO DOWNLOAD -> ",
         print(dict_need)
 
+def get_first_episode_last_season(mypath,serie_name,serie_id,season_nb):
+    mypath= mypath+serie_name+"/S"+season_nb
+    mydict = get_Dict_Serie(mypath)
+    search = tmdb.TV_Seasons(serie_id,season_nb)
+    ser = search.info()
+    now = datetime.datetime.now().strftime('%Y-%m-%d')
+    
+    for s in ser.get('episodes'):
+        if (now > s['air_date'] and s['air_date'] is not None):
+            print(bcolors.EMPTY + "-- Season To Download -- "+ bcolors.ENDC + "["+season_nb+"] PRESENT ONLINE (" + s['air_date']+")")
+        else:
+            print(bcolors.EMPTY + "-- Season To Download -- "+ bcolors.ENDC + "["+season_nb+"] NOT PRESENT ONLINE (" + s['air_date']+")")
+        break
+        
 def notifcation_serie(directory):
     if (verbose == "True"):
         if (internet_access() == False):
@@ -113,7 +128,10 @@ def notifcation_serie(directory):
             if (isdir(join(mypath+"/"+serie+"/S"+season))):
                 check_serie(mypath+"/",serie,serie_id,season)
             else:
-                print(bcolors.EMPTY + "-- Season Download --"+ bcolors.ENDC + "["+season+"]")
+                if (s == last_season):
+                    get_first_episode_last_season(mypath+"/",serie,serie_id,season)
+                else:
+                    print(bcolors.EMPTY + "-- Season To Download -- "+ bcolors.ENDC + "["+season+"]")
 
 ## DISCRET
 def discret_check_serie(mypath,serie_name,serie_id,season_nb):

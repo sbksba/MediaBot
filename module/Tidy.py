@@ -1,7 +1,8 @@
 import re, shutil, urllib
 from Config_tools import ConfigSectionMap
-from os import listdir, makedirs
+from os import listdir, makedirs, remove
 from os.path import isfile, join, exists
+import os
 
 try:
     import tmdbsimple as tmdb
@@ -79,6 +80,7 @@ def getGenre(filename):
 def tidy_up(directory):
     if (verbose == "True"):
         print bcolors.SERIE + "-- TIDY UP -- " + bcolors.ENDC + "      ["+directory+"]"
+    genre = ""
     mypath = directory
     onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
     for of in onlyfiles:
@@ -96,9 +98,10 @@ def tidy_up(directory):
             # Movie -> need to increase the speed
             else:
                 if (internet_access() == True):
-                    genre = getGenre(of)
-                    if (genre is None):
-                        genre = "None"
+                    if of.rsplit('.',1)[0] != '':
+                        genre = getGenre(of)
+                        if (genre is None):
+                            genre = "None"
                 else:
                     genre = "None"
                 newpath = mypath+"/"+genre.encode('utf-8')

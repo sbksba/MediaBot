@@ -18,6 +18,9 @@ def updateDB(DB_filepath, table):
             if (row[1] == "Lethal_Weapon"):
                 query = "L'Arme fatale"+" S"+row[2]+"E"+row[3]
                 url = 'http://www.torrents9.pe/search_torrent/l-arme-fatale.html'
+            elif (row[1] == "Lost in Space"):
+                query = "Perdus dans l'espace (2018)"+" S"+row[2]+"E"+row[3]
+                url = 'http://www.torrents9.pe/search_torrent/perdus-dans-l-espace.html'
             else:
                 query = row[1].replace("_"," ")+" S"+row[2]+"E"+row[3]
                 url = 'http://www.torrents9.pe/search_torrent/'+ row[1].replace("_","-") +'.html'
