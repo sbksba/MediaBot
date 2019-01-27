@@ -96,12 +96,18 @@ def get_first_episode_last_season(mypath,serie_name,serie_id,season_nb):
     search = tmdb.TV_Seasons(serie_id,season_nb)
     ser = search.info()
     now = datetime.datetime.now().strftime('%Y-%m-%d')
+    date = ""
     
     for s in ser.get('episodes'):
-        if (now > s['air_date'] and s['air_date'] is not None):
-            print(bcolors.EMPTY + "-- Season To Download -- "+ bcolors.ENDC + "["+season_nb+"] PRESENT ONLINE (" + s['air_date']+")")
+        if (isinstance(s['air_date'],type(None))):
+            date = "UNKNOWN"
         else:
-            print(bcolors.EMPTY + "-- Season To Download -- "+ bcolors.ENDC + "["+season_nb+"] NOT PRESENT ONLINE (" + s['air_date']+")")
+            date = s['air_date']
+        
+        if (now > s['air_date'] and s['air_date'] is not None):
+            print(bcolors.EMPTY + "-- Season To Download -- "+ bcolors.ENDC + "["+season_nb+"] PRESENT ONLINE (" +date+")")
+        else:
+            print(bcolors.EMPTY + "-- Season To Download -- "+ bcolors.ENDC + "["+season_nb+"] NOT PRESENT ONLINE (" +date+")")
         break
         
 def notifcation_serie(directory):
